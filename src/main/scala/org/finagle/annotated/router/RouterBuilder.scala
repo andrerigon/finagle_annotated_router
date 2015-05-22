@@ -9,14 +9,35 @@ import com.twitter.util.Future
 import org.jboss.netty.handler.codec.http.HttpMethod
 import Route.getFrom
 
-class RouterBuilder[T]( f: (T => Service[Request, Response]), routes: T*) extends Log {
+class RouterBuilder[T](f: (T => Service[Request, Response]), routes: T*) extends Log {
+
 
   def create = {
+    assertNoDuplicates
     createRoutingService(
       routes.map { route =>
         asMatcher(getFrom(route.getClass), f(route))
       } reduceLeft (_ orElse _)
     )
+  }
+
+  def assertNoDuplicates = {
+    val infos = routes.map(r => getFrom(r.getClass))
+
+    infos.foreach { r =>
+      val samePath = infos.filter(_.path == r.path)
+      if (samePath.size > 1) {
+        samePath.map(_.methods).reduceLeft { (a, b) => {
+          val intersect = a intersect b
+          if (intersect.nonEmpty) {
+            val duplicatedClasses = routes.filter(x => getFrom(x.getClass).path == r.path).map(_.getClass.getSimpleName).mkString(", ")
+            throw new IllegalArgumentException(s"path: '${r.path}' contains duplicated implementations: [$duplicatedClasses]")
+          }
+          a ++ b
+        }
+        }
+      }
+    }
   }
 
   private def createRoutingService(routes: PartialFunction[(HttpMethod, Path), Service[Request, Response]]) =
@@ -45,7 +66,7 @@ class RouterBuilder[T]( f: (T => Service[Request, Response]), routes: T*) extend
 
     val paths = routes.map { r =>
       val info = getFrom(r.getClass)
-      s"${colored(if(info.path == Root) "/" else info.path.toString, Console.WHITE)}"
+      s"${colored(if (info.path == Root) "/" else info.path.toString, Console.WHITE)}"
     }
 
     val classes = routes.map { r =>

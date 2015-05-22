@@ -25,8 +25,26 @@ class RouterBuilderSpec extends FlatSpec with Matchers with MockitoSugar with Be
     }
   }
 
+  @Route("/foo", HEAD)
+  class MyRoute3  extends MyRoute{
+    override def run() = {
+      val r = Response()
+      r.content = ChannelBuffers.wrappedBuffer("bar".getBytes)
+      r
+    }
+  }
+
   @Route(Root, PUT)
-  class MyRoute2 extends MyRoute{
+  class MyRoute2 extends MyRoute {
+    override def run() = {
+      val r = Response()
+      r.content = ChannelBuffers.wrappedBuffer("barbar".getBytes)
+      r
+    }
+  }
+
+  @Route("/foo", POST)
+  class MyRouteDuplicated extends MyRoute {
     override def run() = {
       val r = Response()
       r.content = ChannelBuffers.wrappedBuffer("barbar".getBytes)
@@ -39,7 +57,7 @@ class RouterBuilderSpec extends FlatSpec with Matchers with MockitoSugar with Be
   }
 
   it should "create router with correct matchers" in {
-    val service = new RouterBuilder(f, new MyRoute, new MyRoute2).create
+    val service = new RouterBuilder(f, new MyRoute, new MyRoute2, new MyRoute3).create
 
     result(service(Request("/foo"))).contentString shouldBe "bar"
 
@@ -48,6 +66,12 @@ class RouterBuilderSpec extends FlatSpec with Matchers with MockitoSugar with Be
     result(service(Request(PUT, "/"))).contentString shouldBe "barbar"
 
     result(service(Request("/bla"))).statusCode shouldBe 404
+  }
+
+  it should "throw exception if there are duplicated routes" in {
+    intercept[IllegalArgumentException] {
+      new RouterBuilder(f, new MyRoute, new MyRoute2, new MyRouteDuplicated).create
+    }
   }
 
   it should "log correct route info" in {

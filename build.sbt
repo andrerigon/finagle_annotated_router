@@ -12,29 +12,14 @@ resolvers ++= Seq("Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/
 
 resolvers += "Mesosphere Public Repository" at "http://downloads.mesosphere.io/maven"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.6"
 
 val finagleVersion = "6.25.0"
 
-organization := "com.rigon"
-
 libraryDependencies ++= Seq(
-  "com.sksamuel.elastic4s" %% "elastic4s" % "1.4.0",
-  "com.twitter" %% "twitter-server" % "1.10.0",
-  "com.twitter" % "finagle-core_2.11" % "6.2.0",
+  "org.scala-lang" % "scala-reflect" % "2.11.6",
   "com.twitter" %% "finagle-http" % finagleVersion,
-  "com.twitter" %% "finagle-mysql" % finagleVersion,
-  "redis.clients" % "jedis" % "2.6.2",
-  ("com.twitter" %% "finagle-stats" % finagleVersion).exclude("asm", "asm"),
-  "com.codahale.metrics" % "metrics-graphite" % "3.0.1",
-  "com.twitter" %% "finagle-zipkin" % finagleVersion,
-  "org.slf4j" % "slf4j-log4j12" % "1.7.10",
-  "com.fasterxml.jackson.module" % "jackson-module-scala_2.11" % "2.4.4",
-  "com.typesafe.akka" %% "akka-actor" % "2.3.6",
-  "com.typesafe" % "config" % "1.2.1",
-  "mesosphere" %% "jackson-case-class-module" % "0.1.2",
-  "org.springframework" % "spring-core" % "4.1.6.RELEASE",
-  "org.springframework" % "spring-context" % "4.1.6.RELEASE"
+  "org.slf4j" % "slf4j-log4j12" % "1.7.10"
 )
 
 // test
@@ -49,12 +34,6 @@ assemblyJarName in assembly := s"${name.value}.jar"
 
 parallelExecution in Test := true
 
-testOptions in Test += Tests.Cleanup(() => {
-  val files = new File("/tmp").listFiles().filter(_.getName.startsWith("search_api_"))
-  def delete(file: File): Array[(String, Boolean)] = Option(file.listFiles).map(_.flatMap(delete)).getOrElse(Array()) :+ (file.getPath -> file.delete)
-  files map delete
-})
-
 ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 65
 
 ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := true
@@ -68,15 +47,6 @@ addCommandAlias("cov", "; clean; coverage; test")
 Revolver.settings
 
 test in assembly := {}
-
-assemblyMergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
-{
-  case "META-INF/spring.tooling" => MergeStrategy.first
-  case x => old(x)
-}
-}
-
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
 
 releaseSettings
 

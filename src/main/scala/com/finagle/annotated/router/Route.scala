@@ -1,4 +1,4 @@
-package com.rigon
+package com.finagle.annotated.router
 
 import com.twitter.finagle.http.path.{Root, Path}
 import org.jboss.netty.handler.codec.http.HttpMethod
@@ -24,7 +24,7 @@ object Route {
        case q"com.twitter.finagle.http.path.Path.apply(${x: String})" => Path(x.toString)
        case q"com.twitter.finagle.http.path.Root./(${x: String})" =>  Path(x)
        case q"com.twitter.finagle.http.path.Root" => Root
-       case q"com.hu.server.router.PathImplicits.String2Path(${x: String})" => Path(x.toString)
+       case q"PathImplicits.String2Path(${x: String})" => Path(x.toString)
      }
 
      val annotations = currentMirror.classSymbol(clazz).asClass.annotations

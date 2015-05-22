@@ -14,6 +14,8 @@ resolvers += "Mesosphere Public Repository" at "http://downloads.mesosphere.io/m
 
 scalaVersion := "2.11.6"
 
+organization := "org"
+
 val finagleVersion = "6.25.0"
 
 libraryDependencies ++= Seq(

@@ -1,4 +1,4 @@
-package com.finagle.annotated.router
+package org.finagle.annotated.router
 
 import org.apache.log4j.Logger
 

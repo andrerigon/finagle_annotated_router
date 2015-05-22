@@ -1,4 +1,4 @@
-package com.finagle.annotated.router
+package org.finagle.annotated.router
 
 import com.twitter.finagle.http.path.Root
 import org.apache.log4j.Logger

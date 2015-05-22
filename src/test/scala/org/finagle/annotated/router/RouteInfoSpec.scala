@@ -1,4 +1,4 @@
-package com.finagle.annotated.router
+package org.finagle.annotated.router
 
 import PathImplicits._
 import com.twitter.finagle.http.path.{Root, Path}

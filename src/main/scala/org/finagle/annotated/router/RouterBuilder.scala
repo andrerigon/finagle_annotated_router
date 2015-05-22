@@ -1,4 +1,4 @@
-package com.finagle.annotated.router
+package org.finagle.annotated.router
 
 import ConsoleUtils.colored
 import com.twitter.finagle.Service

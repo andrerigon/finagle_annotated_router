@@ -1,15 +1,15 @@
 package org.finagle.annotated.router
 
+import ConsoleUtils.colored
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.path.{Path, Root}
 import com.twitter.finagle.http.service.RoutingService
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
-import ConsoleUtils.colored
-import Route.getFrom
 import org.jboss.netty.handler.codec.http.HttpMethod
+import Route.getFrom
 
-class RouterBuilder[T,R <: Request](f: (T => Service[R, Response]), routes: T*) extends Log {
+class RouterBuilder[T](f: (T => Service[Request, Response]), routes: T*) extends Log {
 
 
   def create = {
@@ -40,21 +40,21 @@ class RouterBuilder[T,R <: Request](f: (T => Service[R, Response]), routes: T*) 
     }
   }
 
-  private def createRoutingService(routes: PartialFunction[(HttpMethod, Path), Service[R, Response]]) =
+  private def createRoutingService(routes: PartialFunction[(HttpMethod, Path), Service[Request, Response]]) =
     new RoutingService(
-      new PartialFunction[Request, Service[R, Response]] {
-        override def isDefinedAt(request: Request): Boolean = routes.isDefinedAt(request.method -> Path(request.path))
-
-        override def apply(request: Request): Service[R, Response] = new Service[R, Response] {
-          override def apply(request: R): Future[Response] = routes(request.method -> Path(request.path))(request)
+      new PartialFunction[Request, Service[Request, Response]] {
+        def apply(request: Request) = new Service[Request, Response] {
+          override def apply(request: Request): Future[Response] = routes(request.method -> Path(request.path))(request)
         }
+
+        def isDefinedAt(request: Request) = routes.isDefinedAt(request.method -> Path(request.path))
       })
 
-  private def asMatcher(route: Route, service: Service[R, Response]) = {
-    new PartialFunction[(HttpMethod, Path), Service[R, Response]] {
+  private def asMatcher(route: Route, service: Service[Request, Response]) = {
+    new PartialFunction[(HttpMethod, Path), Service[Request, Response]] {
       override def isDefinedAt(x: (HttpMethod, Path)): Boolean = x._2 == route.path && route.methods.contains(x._1)
 
-      override def apply(v1: (HttpMethod, Path)): Service[R, Response] = service
+      override def apply(v1: (HttpMethod, Path)): Service[Request, Response] = service
     }
   }
 

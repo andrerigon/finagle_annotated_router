@@ -1,18 +1,19 @@
-package org.finagle.annotated.router
+package org.finagle.annotated.router.unit
 
-import com.twitter.finagle.http.path.Root
-import org.apache.log4j.Logger
-import PathImplicits._
 import com.twitter.finagle.Service
+import com.twitter.finagle.http.path.Root
 import com.twitter.finagle.http.{Request, Response}
+import com.twitter.util.Await.result
 import com.twitter.util.{Await, Future}
+import org.apache.log4j.Logger
+import org.finagle.annotated.router.PathImplicits._
+import org.finagle.annotated.router.{RouterBuilder, PathImplicits, Route}
 import org.jboss.netty.buffer.ChannelBuffers
 import org.jboss.netty.handler.codec.http.HttpMethod._
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
-import Await.result
 
 class RouterBuilderSpec extends FlatSpec with Matchers with MockitoSugar with BeforeAndAfter {
 

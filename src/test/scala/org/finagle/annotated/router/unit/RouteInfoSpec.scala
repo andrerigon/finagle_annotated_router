@@ -1,11 +1,11 @@
-package org.finagle.annotated.router
+package org.finagle.annotated.router.unit
 
-import PathImplicits._
+import org.finagle.annotated.router.PathImplicits._
 import com.twitter.finagle.http.path.{Root, Path}
+import org.finagle.annotated.router.Route
 import org.jboss.netty.handler.codec.http.HttpMethod._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
-
 
 class RouteInfoSpec extends FlatSpec with Matchers with MockitoSugar with BeforeAndAfter {
 

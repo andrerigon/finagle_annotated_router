@@ -1,6 +1,7 @@
-package org.finagle.annotated.router
+package org.finagle.annotated.router.unit
 
 import com.twitter.finagle.http.path.Path
+import org.finagle.annotated.router.PathImplicits
 import org.scalatest.{FlatSpec, Matchers, BeforeAndAfter}
 import org.scalatest.mock.MockitoSugar
 

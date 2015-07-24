@@ -59,17 +59,19 @@ class RouterBuilder[T](f: (T => Service[Request, Response]), routes: T*) extends
   }
 
   def print() = {
-    val methods = routes.map { r =>
+    val list = routes.sortBy(r => getFrom(r.getClass).path.toString)
+
+    val methods = list.map { r =>
       val info = getFrom(r.getClass)
       s"${colored(info.methods.mkString(",").toString, Console.GREEN)}"
     }
 
-    val paths = routes.map { r =>
+    val paths = list.map { r =>
       val info = getFrom(r.getClass)
       s"${colored(if (info.path == Root) "/" else info.path.toString, Console.WHITE)}"
     }
 
-    val classes = routes.map { r =>
+    val classes = list.map { r =>
       s"${colored(r.getClass.getSimpleName, Console.YELLOW)}"
     }
 

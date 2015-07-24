@@ -81,6 +81,6 @@ class RouterBuilder[T](f: (T => Service[Request, Response]), routes: T*) extends
 
   private def leftPad(list: Seq[String]) = {
     val max = list.map(_.length).max
-    list.sortBy(-_.length).map(s => s.padTo(max, " ").mkString)
+    list.map(s => s.padTo(max, " ").mkString)
   }
 }

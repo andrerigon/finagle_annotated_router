@@ -16,7 +16,7 @@ scalaVersion := "2.11.6"
 
 organization := "org"
 
-val finagleVersion = "6.25.0"
+val finagleVersion = "6.30.0"
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % "2.11.6",

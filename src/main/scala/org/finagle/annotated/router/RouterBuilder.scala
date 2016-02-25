@@ -5,8 +5,8 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.path.{Path, Root}
 import com.twitter.finagle.http.service.RoutingService
 import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.{Method => HttpMethod}
 import com.twitter.util.Future
-import org.jboss.netty.handler.codec.http.HttpMethod
 import Route.getFrom
 
 class RouterBuilder[T](f: (T => Service[Request, Response]), routes: T*) extends Log {
@@ -39,6 +39,7 @@ class RouterBuilder[T](f: (T => Service[Request, Response]), routes: T*) extends
       }
     }
   }
+
 
   private def createRoutingService(routes: PartialFunction[(HttpMethod, Path), Service[Request, Response]]) =
     new RoutingService(

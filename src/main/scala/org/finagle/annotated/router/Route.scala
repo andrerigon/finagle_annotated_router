@@ -1,8 +1,7 @@
 package org.finagle.annotated.router
 
 import com.twitter.finagle.http.path.{Root, Path}
-import org.jboss.netty.handler.codec.http.HttpMethod
-
+import com.twitter.finagle.http.{Method => HttpMethod}
 import scala.annotation.StaticAnnotation
 import scala.reflect.runtime.currentMirror
 import scala.reflect.runtime.universe._
@@ -15,9 +14,20 @@ object PathImplicits {
 
 object Route {
 
+  private def extractMethod(s: String) = s.toLowerCase match {
+    case "post"     => HttpMethod.Post
+    case "put"      => HttpMethod.Put
+    case "head"     => HttpMethod.Head
+    case "patch"    => HttpMethod.Patch
+    case "delete"   => HttpMethod.Delete
+    case "trace"    => HttpMethod.Trace
+    case "connect"  => HttpMethod.Connect
+    case _          => HttpMethod.Get
+  }
+
    def getFrom[T](clazz: Class[T]) = {
      implicit val unliftableHttpMethod: Unliftable[HttpMethod] = Unliftable[HttpMethod] {
-       case q"org.jboss.netty.handler.codec.http.HttpMethod.${x: NameApi}" => HttpMethod.valueOf(x.toString)
+       case q"com.twitter.finagle.http.Method.${x: NameApi}" => extractMethod(x.toString)
      }
 
      implicit val unliftablePath: Unliftable[Path] = Unliftable[Path] {

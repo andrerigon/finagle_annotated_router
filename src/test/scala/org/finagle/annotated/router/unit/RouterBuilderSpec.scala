@@ -8,47 +8,47 @@ import com.twitter.util.{Await, Future}
 import org.apache.log4j.Logger
 import org.finagle.annotated.router.PathImplicits._
 import org.finagle.annotated.router.{RouterBuilder, PathImplicits, Route}
-import org.jboss.netty.buffer.ChannelBuffers
-import org.jboss.netty.handler.codec.http.HttpMethod._
+import com.twitter.finagle.http.Method
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
+import com.twitter.io.Buf
 
 class RouterBuilderSpec extends FlatSpec with Matchers with MockitoSugar with BeforeAndAfter {
 
-  @Route("/foo", GET, POST)
+  @Route("/foo", Method.Get, Method.Post)
   class MyRoute {
     def run() = {
       val r = Response()
-      r.content = ChannelBuffers.wrappedBuffer("bar".getBytes)
+      r.content = Buf.Utf8("bar")
       r
     }
   }
 
-  @Route("/foo", HEAD)
+  @Route("/foo", Method.Head)
   class MyRoute3  extends MyRoute{
     override def run() = {
       val r = Response()
-      r.content = ChannelBuffers.wrappedBuffer("bar".getBytes)
+      r.content = Buf.Utf8("bar")
       r
     }
   }
 
-  @Route(Root, PUT)
+  @Route(Root, Method.Put)
   class MyRoute2 extends MyRoute {
     override def run() = {
       val r = Response()
-      r.content = ChannelBuffers.wrappedBuffer("barbar".getBytes)
+      r.content = Buf.Utf8("barbar")
       r
     }
   }
 
-  @Route("/foo", POST)
+  @Route("/foo", Method.Post)
   class MyRouteDuplicated extends MyRoute {
     override def run() = {
       val r = Response()
-      r.content = ChannelBuffers.wrappedBuffer("barbar".getBytes)
+      r.content = Buf.Utf8("barbar")
       r
     }
   }
@@ -62,9 +62,9 @@ class RouterBuilderSpec extends FlatSpec with Matchers with MockitoSugar with Be
 
     result(service(Request("/foo"))).contentString shouldBe "bar"
 
-    result(service(Request(POST, "/foo"))).contentString shouldBe "bar"
+    result(service(Request(Method.Post, "/foo"))).contentString shouldBe "bar"
 
-    result(service(Request(PUT, "/"))).contentString shouldBe "barbar"
+    result(service(Request(Method.Put, "/"))).contentString shouldBe "barbar"
 
     result(service(Request("/bla"))).statusCode shouldBe 404
   }
